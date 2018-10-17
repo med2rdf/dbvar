@@ -1,9 +1,5 @@
-RSpec.describe Dbvar::Rdf do
-  it "has a version number" do
-    expect(Dbvar::Rdf::VERSION).not_to be nil
-  end
-
-  it "does something useful" do
-    expect(false).to eq(true)
+RSpec.describe DbVar::RDF do
+  it 'has a version number' do
+    expect(DbVar::RDF::VERSION).not_to be nil
   end
 end
