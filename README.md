@@ -1,38 +1,42 @@
-# Dbvar::Rdf
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/dbvar/rdf`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
-
-## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'dbvar-rdf'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install dbvar-rdf
+# DbVar::RDF
 
 ## Usage
 
-TODO: Write usage instructions here
+- Input: dbVar GVF (Genome Variation Format)
 
-## Development
+  - GRCh37
+    ftp://ftp.ncbi.nlm.nih.gov/pub/dbVar/data/Homo_sapiens/by_assembly/GRCh37/gvf/GRCh37.variant_call.gvf.gz
+    ftp://ftp.ncbi.nlm.nih.gov/pub/dbVar/data/Homo_sapiens/by_assembly/GRCh37/gvf/GRCh37.variant_region.gvf.gz
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+  - GRCh38
+    ftp://ftp.ncbi.nlm.nih.gov/pub/dbVar/data/Homo_sapiens/by_assembly/GRCh38/gvf/GRCh38.variant_call.gvf.gz
+    ftp://ftp.ncbi.nlm.nih.gov/pub/dbVar/data/Homo_sapiens/by_assembly/GRCh38/gvf/GRCh38.variant_region.gvf.gz
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+- Output: Turtle formatted RDF
+
+### With docker
+
+```
+$ docker build --tag dbvar-rdf .
+$ zcat GRCh38.variant_call.gvf.gz | docker run --rm -i dbvar-rdf convert variant_call 2> dbVar.variant_call.GRCh38.log | gzip -c > dbVar.variant_call.GRCh38.ttl.gz
+$ zcat GRCh38.variant_region.gvf.gz | docker run --rm -i dbvar-rdf convert variant_region 2> dbVar.variant_region.GRCh38.log | gzip -c > dbVar.variant_region.GRCh38.ttl.gz
+```
+
+### In your code
+
+```ruby
+require 'dbvar/rdf'
+
+DbVar::RDF::Writer::Turtle.new do |writer| # to standard output
+  DbVar::RDF::Reader::GVF.new.each do |data| # from standard input
+    writer << data.to_rdf(DbVar::RDF::Models::VariantCall) # or DbVar::RDF::Models::VariantRegion
+  end
+end
+```
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/dbvar-rdf. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/med2rdf/dbvar-rdf. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
@@ -40,4 +44,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the Dbvar::Rdf project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/dbvar-rdf/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the DbVar::RDF project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/med2rdf/dbvar-rdf/blob/master/CODE_OF_CONDUCT.md).
